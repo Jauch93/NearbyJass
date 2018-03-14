@@ -29,7 +29,6 @@ public class Card
 	
 	public byte[] toByteArr() 
 	{
-		// TODO: testing!
 		byte[] ret = new byte[30];
 		ret[0] = (byte)color.ordinal();
 		ret[1] = (byte)name.ordinal();
@@ -47,7 +46,7 @@ public class Card
 		return ret;
 	}
 	
-	Card(CardColor color, CardName name, int points, int value)
+	public Card(CardColor color, CardName name, int points, int value)
 	{
 		this.color = color;
 		this.name = name;
