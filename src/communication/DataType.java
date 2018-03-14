@@ -3,7 +3,10 @@ package communication;
 public enum DataType 
 {
 	STRING,
+	STRINGARR,
 	INT,
-	CARD
-
+	INTARR,
+	CARD,
+	
+	UNDEF
 }

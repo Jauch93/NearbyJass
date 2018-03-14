@@ -14,29 +14,35 @@ import game.GameState;
 
 public class Info
 {
-	private byte[] message;			//Das Der effektive String/Int, whatever, der übermittelt werden soll
+	private byte[] byteString;			//Das Der effektive String/Int, whatever, der übermittelt werden soll
 	private GameState nextState;	//Nächste State, der das GameObject einnehmen soll
-	private DataType dataType;		//ist message als int/String/Card zu entschlüsseln?
+	private DataType dataType = DataType.UNDEF;		//ist message als int/String/Card zu entschlüsseln?
 	
-	private byte[] infoObject;
+	private byte[] message;
 	
 	public Info(Payload payload)		//Die erhaltene Payload soll hier aufgeschlüsselt werden und in die verschiedenen Informationen unterteilt werden.
 	{
-		message = payload.asBytes();
-		//TODO: Trennung von stateInfo und Message--> dazu erst info objekt erstellen!
+		byteString = payload.asBytes();
+		
+		//TODO: Trennung von state und message
 	}
 	
 	public Info(GameState nextState, byte[] message, DataType dataType)
 	{
-		this.message = message;
+		this.byteString = message;
 		this.nextState = nextState;
 		this.dataType = dataType;
-		this.infoObject = new byte[message.length + 2];
+		this.message = new byte[message.length + 2];
 		
-		infoObject[0] = (byte)nextState.ordinal();
-		infoObject[1] = (byte)dataType.ordinal();
-		for(int i = 0; i < message.length; i ++)
-			infoObject[i+2] = message[i];
+		createMessage();
+	}
+	
+	public Info(GameState nextState, int num)
+	{
+		this.nextState = nextState;
+		this.byteString = Info.intToByteArr(num);
+		this.dataType = DataType.INT;
+		createMessage();
 	}
 	
 	public Info(GameState gameState, Card card)
@@ -44,9 +50,100 @@ public class Info
 	//TODO: Konstruktor, der eine Karte direkt verarbeiten kann
 	}
 	
+	public void createMessage()
+	{
+		if((this.byteString != null) && (getState() != GameState.UNDEF) && (getType() != DataType.UNDEF))
+		{
+			//Aufbau Byte-Array: ('nextState' 'dataType' "message")
+			message[0] = (byte)nextState.ordinal();
+			message[1] = (byte)dataType.ordinal();
+			for(int i = 0; i < byteString.length; i ++)
+				message[i+2] = byteString[i];
+		}
+	}
+	
+	//----------------------------------------------------------------
+	//Funktionen zur DateiKonvertierung:
+	
 	public Payload asPayload()
 	{
-		return Payload.fromBytes(message);
+		return Payload.fromBytes(byteString);
+	}
+	
+	public static int byteArrToInt(byte[] byteArr)
+	{
+		int ret = 0;
+		int exp = 1;
+		for(int i = 0; i < byteArr.length; i++)
+		{
+			ret += Byte.toUnsignedInt(byteArr[i])*exp;
+			exp = 256*exp;
+		}
+		return ret;
+	}
+	
+	public static byte[] intToByteArr(int k)
+	{
+		if(k < 4000000)		//MaximalWert um überläufe des intArrays zu vermeiden.
+		{
+			byte[] arr = new byte[4];
+			for(int i = 0; i < arr.length; i++)
+			{
+				arr[i] = (byte) (k%256);
+				k = k/256;
+			}
+			return arr;
+		}
+		else
+			return null;
+	}
+	
+	//-----------------------------------------------------------------
+	//Komplexe Getters:
+	
+	public String getStringMessage()
+	{
+		if(dataType == DataType.STRING)
+		{
+			return byteString.toString();
+		}
+		else
+			return null;
+	}
+	
+	public int getIntMessage()
+	{
+		if(dataType == DataType.INT)
+		{
+			return Info.byteArrToInt(message);
+		}
+		else
+			return 0;
+	}
+	//-----------------------------------------------------------------
+	//Einfache Getters:
+	
+	public GameState getState()
+	{
+		return nextState;
+	}
+	
+	public byte[] getMessage()
+	{
+		return byteString;
+	}
+	
+	private DataType getType() 
+	{
+		return this.dataType;
+	}
+	
+	public static void main(String args[])
+	{
+		//TESTCASE 1: Int-Umwandlung
+		int test = 3999999;
+		byte[] res = Info.intToByteArr(test);
+		System.out.println(Info.byteArrToInt(res));
 	}
 	
 }
