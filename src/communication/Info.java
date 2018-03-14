@@ -1,5 +1,7 @@
 package communication;
 
+import java.nio.charset.Charset;
+
 import cards_and_Deck.Card;
 import game.GameState;
 
@@ -20,28 +22,37 @@ public class Info
 	
 	private byte[] message;
 	
+	//-----------------------------------------------------------------
+	//Konstruktoren um verschiedene Datentypen direkt in ByteArray zu casten.
+	
 	public Info(Payload payload)		//Die erhaltene Payload soll hier aufgeschlüsselt werden und in die verschiedenen Informationen unterteilt werden.
 	{
-		byteString = payload.asBytes();
+		message = payload.asBytes();
 		
 		//TODO: Trennung von state und message
 	}
 	
-	public Info(GameState nextState, byte[] message, DataType dataType)
+	public Info(GameState nextState, byte[] message, DataType dataType) //Rudimentärer Konstruktor
 	{
 		this.byteString = message;
 		this.nextState = nextState;
-		this.dataType = dataType;
-		this.message = new byte[message.length + 2];
-		
+		this.dataType = dataType;		
 		createMessage();
 	}
 	
-	public Info(GameState nextState, int num)
+	public Info(GameState nextState, int num)			//Verarbeitet integer Daten
 	{
 		this.nextState = nextState;
 		this.byteString = Info.intToByteArr(num);
 		this.dataType = DataType.INT;
+		createMessage();
+	}
+	
+	public Info(GameState nextState, String str)
+	{
+		this.nextState = nextState;
+		this.byteString = Info.StringToByteArr(str);
+		this.dataType = DataType.STRING;
 		createMessage();
 	}
 	
@@ -52,8 +63,10 @@ public class Info
 	
 	public void createMessage()
 	{
-		if((this.byteString != null) && (getState() != GameState.UNDEF) && (getType() != DataType.UNDEF))
+		if((this.byteString != null) && (getType() != DataType.UNDEF)) //GameState darf UNDEF sein.
 		{
+			this.message = new byte[byteString.length + 2];
+			
 			//Aufbau Byte-Array: ('nextState' 'dataType' "message")
 			message[0] = (byte)nextState.ordinal();
 			message[1] = (byte)dataType.ordinal();
@@ -69,6 +82,8 @@ public class Info
 	{
 		return Payload.fromBytes(byteString);
 	}
+	
+	//Integer-Byte Konvertierungen:
 	
 	public static int byteArrToInt(byte[] byteArr)
 	{
@@ -98,14 +113,46 @@ public class Info
 			return null;
 	}
 	
+	//String-Byte Konvertierungen:
+	
+	public static String byteArrToString(byte[] byteArr)
+	{
+		return new String(byteArr, Charset.forName("UTF-8"));
+	}
+	
+	public static byte[] StringToByteArr(String str)
+	{
+		return str.getBytes(Charset.forName("UTF-8"));	
+	}
+	
+	//Card-Byte Konvertierungen:
+	
+	private static Card byteArrToCard(byte[] byteString) 
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 	//-----------------------------------------------------------------
 	//Komplexe Getters:
 	
+	public Card getCardMessage()
+	{
+		if(dataType == DataType.CARD)
+		{
+			Card ret = Info.byteArrToCard(byteString);
+			return ret;
+		}
+		else
+			return null;
+	}
+
 	public String getStringMessage()
 	{
 		if(dataType == DataType.STRING)
 		{
-			return byteString.toString();
+			return Info.byteArrToString(byteString);
 		}
 		else
 			return null;
@@ -115,7 +162,7 @@ public class Info
 	{
 		if(dataType == DataType.INT)
 		{
-			return Info.byteArrToInt(message);
+			return Info.byteArrToInt(byteString);
 		}
 		else
 			return 0;
@@ -141,9 +188,8 @@ public class Info
 	public static void main(String args[])
 	{
 		//TESTCASE 1: Int-Umwandlung
-		int test = 3999999;
-		byte[] res = Info.intToByteArr(test);
-		System.out.println(Info.byteArrToInt(res));
+		Info test = new Info(GameState.UNDEF, 4239);
+		System.out.println(test.getIntMessage());
 	}
 	
 }
