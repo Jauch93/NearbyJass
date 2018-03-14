@@ -5,29 +5,67 @@ import cards_and_Deck.*;
 public class Player 
 {
 	private String name;
-	private String endPointId;
-	private Card[] handCards;
-	private int anzCards = 0;
+	private String endPointId = null;
+	private boolean isHost = false;
 	
-	Player(String name)
+	//---------------------------------------------------------------------
+	//C-Tors
+	
+	public Player (String name, String endPointId, boolean isHost)
+	{
+		this.name = name;
+		this.endPointId = endPointId;
+		this.isHost = isHost;
+	}
+	
+	public Player(String name)
 	{
 		this.name = name;
 	}
 	
-	public void takeCard(Card card)			//Karte der Hand des Spieler hinzufügen.
+	public Player()
 	{
-		handCards = new Card[anzCards + 1];
-		handCards[anzCards] = card;
+		this.name = null;
 	}
 	
-	public int getAnzCards()
+	//---------------------------------------------------------------------
+	//
+	
+	
+
+	
+	
+	//---------------------------------------------------------------------
+	//Setters und Getters
+	
+	public void setHost(boolean h)
 	{
-		return anzCards;
+		this.isHost = h;
+	}
+	
+	public boolean isHost()
+	{
+		return isHost;
+	}
+	
+	public void setEndPointId(String id)
+	{
+		this.endPointId = id;
+	}
+	
+	public String getEndPointId()
+	{
+		return endPointId;
 	}
 	
 	public String getName()
 	{
 		return name;
+	}
+	
+	public void setName(String name)
+	{
+		this.name = name;
 	}
 
 }

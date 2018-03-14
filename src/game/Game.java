@@ -1,42 +1,26 @@
 package game;
 import communication.GoogleApiClient;
+import communication.Info;
 
 public abstract class Game 
 {
-	private Player myself;
+	private Player[] player = new Player[4];
+	private int anzPlayer = 0;
 	private GoogleApiClient mGoogleApiClient;
+	private GameState gamestate;
+	private String serviceId = "69"; //Immer noch unklar, was das genau macht.
 	
-	class Participant
+	public Game(GoogleApiClient mGoogleApiClient)
 	{
-		private String name;
-		private String endpointId = null;
-		
-		public String getName()
-		{
-			return name;
-		}
-		
-		public void setName(String name)
-		{
-			this.name = name;
-		}
-		
-		public void setEndpointId(String id)
-		{
-			this.endpointId = id;
-		}
-		
-		public String getEndpointId()
-		{
-			return endpointId;
-		}
-
+		this.mGoogleApiClient = mGoogleApiClient;
+		String myName = "MeinName"; //TODO: Name des Localspielers irgendwie einfügen.
+		player[0] = new LocalPlayer(myName);
+		anzPlayer++;
 	}
 	
-	Game(GoogleApiClient mGoogleApiClient)
+	public String getServiceId()
 	{
-		myself = new Player("Host");
-		this.mGoogleApiClient = mGoogleApiClient;
+		return serviceId;
 	}
 	
 	public GoogleApiClient getGoogleApiClient()
@@ -44,11 +28,62 @@ public abstract class Game
 		return mGoogleApiClient;
 	}
 	
+	
+	//-----------------------------------------------------------
+	//Player-Operationen:
+	
+	public Player getPlayer(int i)
+	{
+		return player[i];
+	}
+	
 	public Player getMyself()
 	{
-		return myself;
+		return player[0];
+	}
+	
+	public void addPlayer(Player p)
+	{
+		if(anzPlayer < 4)
+		{
+			player[anzPlayer] = p;
+			anzPlayer++;
+		}
 	}
 
-	//TODO: Hier wird der Spielablauf grob beschrieben. In abgeleiteten Klassen soll das Spielgeschehen separat für den Client
-	//      und den Host beschrieben werden.
+	public Player searchByEndpointId(String id)
+	{
+		for(int i = 0; i < player.length; i++)
+		{
+			if(id.equals(player[i].getEndPointId()))
+				return player[i];
+		}
+		return null;
+	}
+	
+	public Player searchByName(String name)
+	{
+		for(int i = 0; i < player.length; i++)
+		{
+			if(name.equals(player[i].getName()))
+				return player[i];
+		}
+		return null;
+	}
+	//----------------------------------------------------------------------------
+	//Basic connect functions
+	
+	
+	public PayloadCallback mPayloadCallback = new PayloadCallback() 
+	{
+        @Override
+        public void onPayloadReceived(String s, Payload payload)
+        {
+            Info data = new Info(payload);
+            gamestate = GameState.DATATOFETCH;
+        }
+        
+	};
+
+	
 }

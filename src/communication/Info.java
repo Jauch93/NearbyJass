@@ -10,12 +10,10 @@ import game.GameState;
 
 
 /**
- * 
+ * This Class is supposed to simplify the Communication between a Host and a Client, specifically to create a Jass-Turnier between devices with the NearbyAPI from Google.
+ *
  * @author Jauch
  * @version 0.9
- *
- *	Mit Hilfe dieser Klasse soll die Datenübertragung zwischen Client und Host
- *	vereinfacht werden.
  *
  */
 
@@ -68,7 +66,7 @@ public class Info
 	 * 
 	 */
 	
-	public Info(GameState nextState, int num)			//Verarbeitet integer Daten
+	public Info(GameState nextState, int num)
 	{
 		this.nextState = nextState;
 		this.byteArray = Info.intToByteArr(num);
@@ -110,7 +108,6 @@ public class Info
 	//Kodierungs- und DekodierungsAlgorithmen
 	
 	/**
-	 * 
 	 * This Function specifies in which order the three types of Data will be wrapped
 	 * up into a single Array of bytes.
 	 * Order of the byteArray = ('nextState' 'dataType' "message")
@@ -131,13 +128,12 @@ public class Info
 	}
 	
 	/**
-	 * 
 	 * This function disassembles the byteMessage into its three types of Data.
 	 * It acts as the countermeasure to createMessage().
 	 * 
 	 */
 	
-	private void decodeMessage()		//Zerlegt das byteArray message in seine einzelnen bestandteile.//TODO: testing!
+	private void decodeMessage()		//TODO: Testing!
 	{
 		if(message != null)
 		{
@@ -182,7 +178,7 @@ public class Info
 	
 	/**
 	 * Convorts a integer into a byteArray.
-	 * @param k limited to a value below 4 Million and positiv.
+	 * @param k value must be below 4 Million and positiv.
 	 * @return
 	 */
 	
@@ -316,14 +312,6 @@ public class Info
 	private DataType getType() 
 	{
 		return this.dataType;
-	}
-	
-	public static void main(String args[])
-	{
-		//TESTCASE 1: Int-Umwandlung
-		Info test = new Info(GameState.UNDEF, new Card(CardColor.EICHLE, CardName.OBER, 42,69));
-		Card t = test.getCardMessage();
-		System.out.println(t.getPoints());
 	}
 	
 }
