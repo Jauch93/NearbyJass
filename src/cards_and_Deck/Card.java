@@ -1,5 +1,7 @@
 package cards_and_Deck;
 
+import communication.Info;
+
 public class Card 
 {
 	private CardColor color;
@@ -9,9 +11,21 @@ public class Card
 	private String pictureURL = null; //Link auf das anzuzeigende bild im GUI
 	private boolean playable = true;		//wichtig, sobald die Karte auf der Hand ist, und soll angeben, ob die Karte, je nach Spielsituation noch spielbar ist.
 	
-	Card(byte[] bytes)		//Einfacherer Konstruktor, um die Karte aus der Payload zu erzeugen.
+	public Card(byte[] bytes)		//Einfacherer Konstruktor, um die Karte aus der Payload zu erzeugen.
 	{
-		
+		//TODO: implement!
+	}
+	
+	public void toByteArr() 
+	{
+		// TODO: implement! -->DateiUmwandlungen überall möglich, einfach noch alles in ein byteArray einfügen!
+		byte[] ret = new byte[20];
+		ret[0] = (byte)color.ordinal();
+		ret[1] = (byte)name.ordinal();
+		byte[] p = Info.intToByteArr(points);
+		byte[] v = Info.intToByteArr(value);
+		byte pb = Info.boolToByte(playable);
+		byte[] pURL = Info.StringToByteArr(pictureURL);
 	}
 	
 	Card(CardColor color, CardName name, int points, int value)
@@ -63,5 +77,4 @@ public class Card
 		//TODO: Hier kommt die Logik rein, die den einzelnen Karten, anhand ihrer Namen und Farben das richtige Bild zuordnet.
 		//Hier wird auch geregelt, ob Deutschschweizer Karten, oder französische angezeigt werden sollen.
 	}
-
 }

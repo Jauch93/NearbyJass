@@ -58,7 +58,7 @@ public class Info
 	
 	public Info(GameState gameState, Card card)
 	{
-	//TODO: Konstruktor, der eine Karte direkt verarbeiten kann
+		card.toByteArr();
 	}
 	
 	public void createMessage()
@@ -125,14 +125,14 @@ public class Info
 		return str.getBytes(Charset.forName("UTF-8"));	
 	}
 	
-	//Card-Byte Konvertierungen:
-	
-	private static Card byteArrToCard(byte[] byteString) 
+	public static byte boolToByte(boolean b)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		if(b)
+			return 1;
+		else
+			return 0;
 	}
-	
+		
 	
 	//-----------------------------------------------------------------
 	//Komplexe Getters:
@@ -141,8 +141,7 @@ public class Info
 	{
 		if(dataType == DataType.CARD)
 		{
-			Card ret = Info.byteArrToCard(byteString);
-			return ret;
+			return new Card(byteString);
 		}
 		else
 			return null;
