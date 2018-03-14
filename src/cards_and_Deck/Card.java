@@ -16,16 +16,24 @@ public class Card
 		//TODO: implement!
 	}
 	
-	public void toByteArr() 
+	public byte[] toByteArr() 
 	{
-		// TODO: implement! -->DateiUmwandlungen überall möglich, einfach noch alles in ein byteArray einfügen!
+		// TODO: testing!
 		byte[] ret = new byte[20];
 		ret[0] = (byte)color.ordinal();
 		ret[1] = (byte)name.ordinal();
 		byte[] p = Info.intToByteArr(points);
+		for(int i = 0; i < p.length; i++)
+			ret[i+2] = p[i];
 		byte[] v = Info.intToByteArr(value);
-		byte pb = Info.boolToByte(playable);
+		for(int i = 0; i < v.length; i++)
+			ret[i+6] = v[i];
+		ret[10] = Info.boolToByte(playable);
 		byte[] pURL = Info.StringToByteArr(pictureURL);
+		for(int i = 0; i < pURL.length; i++)
+			ret[i+11] = pURL[i];
+		
+		return ret;
 	}
 	
 	Card(CardColor color, CardName name, int points, int value)

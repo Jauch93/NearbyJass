@@ -1,7 +1,6 @@
 package communication;
 
 import java.nio.charset.Charset;
-
 import cards_and_Deck.Card;
 import game.GameState;
 
@@ -16,7 +15,7 @@ import game.GameState;
 
 public class Info
 {
-	private byte[] byteString;			//Das Der effektive String/Int, whatever, der übermittelt werden soll
+	private byte[] byteArray;			//Das Der effektive String/Int, whatever, der übermittelt werden soll
 	private GameState nextState;	//Nächste State, der das GameObject einnehmen soll
 	private DataType dataType = DataType.UNDEF;		//ist message als int/String/Card zu entschlüsseln?
 	
@@ -28,13 +27,14 @@ public class Info
 	public Info(Payload payload)		//Die erhaltene Payload soll hier aufgeschlüsselt werden und in die verschiedenen Informationen unterteilt werden.
 	{
 		message = payload.asBytes();
+		this.decodeMessage();
 		
-		//TODO: Trennung von state und message
+		//TODO: testing
 	}
 	
 	public Info(GameState nextState, byte[] message, DataType dataType) //Rudimentärer Konstruktor
 	{
-		this.byteString = message;
+		this.byteArray = message;
 		this.nextState = nextState;
 		this.dataType = dataType;		
 		createMessage();
@@ -43,7 +43,7 @@ public class Info
 	public Info(GameState nextState, int num)			//Verarbeitet integer Daten
 	{
 		this.nextState = nextState;
-		this.byteString = Info.intToByteArr(num);
+		this.byteArray = Info.intToByteArr(num);
 		this.dataType = DataType.INT;
 		createMessage();
 	}
@@ -51,27 +51,44 @@ public class Info
 	public Info(GameState nextState, String str)
 	{
 		this.nextState = nextState;
-		this.byteString = Info.StringToByteArr(str);
+		this.byteArray = Info.StringToByteArr(str);
 		this.dataType = DataType.STRING;
 		createMessage();
 	}
 	
-	public Info(GameState gameState, Card card)
+	public Info(GameState nextState, Card card) //TODO: testing!
 	{
-		card.toByteArr();
+		this.nextState = nextState;
+		this.byteArray = card.toByteArr();
+		this.dataType = DataType.CARD;
+		createMessage();
 	}
 	
-	public void createMessage()
+	//-----------------------------------------------------------
+	//Kodierungs- und DekodierungsAlgorithmen
+	
+	private void createMessage()
 	{
-		if((this.byteString != null) && (getType() != DataType.UNDEF)) //GameState darf UNDEF sein.
+		if((this.byteArray != null) && (getType() != DataType.UNDEF)) //GameState darf UNDEF sein.
 		{
-			this.message = new byte[byteString.length + 2];
+			this.message = new byte[byteArray.length + 2];
 			
 			//Aufbau Byte-Array: ('nextState' 'dataType' "message")
 			message[0] = (byte)nextState.ordinal();
 			message[1] = (byte)dataType.ordinal();
-			for(int i = 0; i < byteString.length; i ++)
-				message[i+2] = byteString[i];
+			for(int i = 0; i < byteArray.length; i ++)
+				message[i+2] = byteArray[i];
+		}
+	}
+	
+	private void decodeMessage()		//Zerlegt das byteArray message in seine einzelnen bestandteile.//TODO: testing!
+	{
+		if(message != null)
+		{
+			this.nextState = GameState.values()[message[0]];
+			this.dataType = DataType.values()[message[1]];
+			for(int i = 2; i < message.length; i++)
+				byteArray[i-2] = message[i];
 		}
 	}
 	
@@ -80,7 +97,7 @@ public class Info
 	
 	public Payload asPayload()
 	{
-		return Payload.fromBytes(byteString);
+		return Payload.fromBytes(byteArray);
 	}
 	
 	//Integer-Byte Konvertierungen:
@@ -141,7 +158,7 @@ public class Info
 	{
 		if(dataType == DataType.CARD)
 		{
-			return new Card(byteString);
+			return new Card(byteArray);
 		}
 		else
 			return null;
@@ -151,7 +168,7 @@ public class Info
 	{
 		if(dataType == DataType.STRING)
 		{
-			return Info.byteArrToString(byteString);
+			return Info.byteArrToString(byteArray);
 		}
 		else
 			return null;
@@ -161,7 +178,7 @@ public class Info
 	{
 		if(dataType == DataType.INT)
 		{
-			return Info.byteArrToInt(byteString);
+			return Info.byteArrToInt(byteArray);
 		}
 		else
 			return 0;
@@ -176,7 +193,7 @@ public class Info
 	
 	public byte[] getMessage()
 	{
-		return byteString;
+		return byteArray;
 	}
 	
 	private DataType getType() 
