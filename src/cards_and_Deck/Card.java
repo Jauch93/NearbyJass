@@ -1,5 +1,7 @@
 package cards_and_Deck;
 
+import java.util.Arrays;
+
 import communication.Info;
 
 public class Card 
@@ -8,18 +10,27 @@ public class Card
 	private CardName name;
 	private int points = 0;
 	private int value = 0;
-	private String pictureURL = null; //Link auf das anzuzeigende bild im GUI
+	private String pictureURL = " "; //Link auf das anzuzeigende bild im GUI
 	private boolean playable = true;		//wichtig, sobald die Karte auf der Hand ist, und soll angeben, ob die Karte, je nach Spielsituation noch spielbar ist.
 	
 	public Card(byte[] bytes)		//Einfacherer Konstruktor, um die Karte aus der Payload zu erzeugen.
 	{
 		//TODO: implement!
+		color = CardColor.values()[bytes[0]];
+		name = CardName.values()[bytes[1]];
+		byte[] tmp = Arrays.copyOfRange(bytes, 2, 5);
+		points = Info.byteArrToInt(tmp);
+		tmp = Arrays.copyOfRange(bytes, 6, 9);
+		value = Info.byteArrToInt(tmp);
+		playable = Info.byteToBool(bytes[10]);
+		tmp = Arrays.copyOfRange(bytes, 11, bytes.length);
+		pictureURL = Info.byteArrToString(tmp);
 	}
 	
 	public byte[] toByteArr() 
 	{
 		// TODO: testing!
-		byte[] ret = new byte[20];
+		byte[] ret = new byte[30];
 		ret[0] = (byte)color.ordinal();
 		ret[1] = (byte)name.ordinal();
 		byte[] p = Info.intToByteArr(points);
@@ -84,5 +95,13 @@ public class Card
 	{
 		//TODO: Hier kommt die Logik rein, die den einzelnen Karten, anhand ihrer Namen und Farben das richtige Bild zuordnet.
 		//Hier wird auch geregelt, ob Deutschschweizer Karten, oder französische angezeigt werden sollen.
+	}
+	
+	public static void main(String args[])
+	{
+		Card test = new Card(CardColor.SCHALLE, CardName.OBER, 42, 69);
+		byte[] t = test.toByteArr();
+		Card solver = new Card(t);
+		System.out.println(solver.getValue());
 	}
 }

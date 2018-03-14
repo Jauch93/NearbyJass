@@ -2,7 +2,7 @@ package game;
 
 public enum GameState 
 {
-	WAIT,
+	WAITING,
 	sendTrumpf,
 	waitForTrumpf,
 	sendPlayedCard,

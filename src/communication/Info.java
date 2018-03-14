@@ -149,6 +149,14 @@ public class Info
 		else
 			return 0;
 	}
+	
+	public static boolean byteToBool(byte b)
+	{
+		if(b ==1)
+			return true;
+		else
+			return false;
+	}
 		
 	
 	//-----------------------------------------------------------------
