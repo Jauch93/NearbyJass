@@ -1,11 +1,19 @@
 package cards_and_Deck;
 
+/**
+ * This Class represents a CardStack.
+ * @author Jauch
+ *
+ */
+
 public class Deck 
 {
 	private Card[] deck;
 	private int cardsInDeck = 0;
 	
-	
+/**
+ * 	Creates a Simple Stack of 36 Cards to play Jass with.
+ */
 	public Deck()			//Erstellt ein Standart Jass Deck mit 36 Karten.
 	{
 		deck = new Card[36];
@@ -18,12 +26,21 @@ public class Deck
 			}
 		}
 	}
+
+	/**
+	 * 
+	 * @return the actual number of Cards in the Stack.
+	 */
 	
 	public int length()
 	{
 		return cardsInDeck;
 	}
 	
+	/**
+	 * Draws one Card randomly.
+	 * @return	a random Card.
+	 */
 	public Card drawRandom()
 	{
 		if(cardsInDeck > 0)
@@ -42,6 +59,11 @@ public class Deck
 			return null;
 		}
 	}
+	
+	/**
+	 * Draws from the top of the Stack.
+	 * @return
+	 */
 	
 	public Card drawFromTop()
 	{
