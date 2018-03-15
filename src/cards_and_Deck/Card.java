@@ -95,6 +95,16 @@ public class Card
 		//Hier wird auch geregelt, ob Deutschschweizer Karten, oder französische angezeigt werden sollen.
 	}
 	
+	public CardColor getCardColor()
+	{
+		return color;
+	}
+	
+	public CardName getCardName()
+	{
+		return name;
+	}
+	
 	public static void main(String args[])
 	{
 		Card test = new Card(CardColor.SCHALLE, CardName.OBER, 42, 69);

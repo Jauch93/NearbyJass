@@ -12,7 +12,10 @@ public class Deck
 		for(int j = 0; j < 4; j++)
 		{
 			for(int i = 0; i < 9; i++)
-				deck[i] = new Card(CardColor.values()[j], CardName.values()[i], 0, 0);
+			{
+				deck[cardsInDeck] = new Card(CardColor.values()[j], CardName.values()[i], 0, 0);
+				cardsInDeck++;
+			}
 		}
 	}
 	
@@ -39,4 +42,16 @@ public class Deck
 			return null;
 		}
 	}
+	
+	public Card drawFromTop()
+	{
+		if(cardsInDeck > 0)
+		{
+			cardsInDeck--;
+			return deck[cardsInDeck];
+		}
+		else
+			return null;
+	}
+
 }
