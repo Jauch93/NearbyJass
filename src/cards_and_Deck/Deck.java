@@ -9,7 +9,11 @@ public class Deck
 	public Deck()			//Erstellt ein Standart Jass Deck mit 36 Karten.
 	{
 		deck = new Card[36];
-		//TODO: Deck instanzieren
+		for(int j = 0; j < 4; j++)
+		{
+			for(int i = 0; i < 9; i++)
+				deck[i] = new Card(CardColor.values()[j], CardName.values()[i], 0, 0);
+		}
 	}
 	
 	public int length()

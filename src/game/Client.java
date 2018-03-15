@@ -7,12 +7,101 @@ public class Client extends Game
 {
 	Client(GoogleApiClient mGoogleApiClient) {
 		super(mGoogleApiClient);
-		// TODO Auto-generated constructor stub
+		
 		startDiscovery();
-		receiveData(); //andere Spielernamen entgegennehmen
+		
+		while(host == null) {}		//Warten, bis ein Host gefunden wurde.
+		
+		startStateMachine();
 	}
 	
 	private Player host;
+	
+	public void startStateMachine()
+	{
+		while(true)
+		{
+			switch(getGameState())
+			{
+			case WAIT:
+				break;
+			case DATATOFETCH:
+				processData();			//erhaltene Daten verarbeiten, zum beispiel karte auf hand ablegen, usw.
+				break;
+				
+			case CHOOSECARD:
+				//TODO: implement function to let player choose a card!
+				setGameState(GameState.WAIT);	//function executed, going back into wait-State
+				break;
+			case CHOOSETRUMPF:
+				//TODO: implement function to let player choose a Trumpf!
+				setGameState(GameState.WAIT);
+				break;
+			case ADDPLAYERNAMES:
+				addPlayerNames();
+				setGameState(GameState.WAIT);
+				break;
+			}
+			
+			if(getGameState() == GameState.EXIT)
+				break;
+		}
+	}
+	
+	private void addPlayerNames() 
+	{
+		for(int i = 0; i < 4; i++)
+		{
+			while(getGameState() != GameState.DATATOFETCH) {} //Warte auf Daten
+			String name = getData().getStringMessage();
+			if(name != getMyself().getName());
+			{
+				addPlayer(new Player(name));
+				if(name == host.getName())
+					getPlayer(i).setHost(true);
+			}
+		}
+	}
+
+	public void processData()
+	{
+		switch(getData().getType())
+		{
+		case CARD: //Unterscheiden zwischen HandKarten und Karten, die auf Table abgelegt werden.
+			switch(getData().getState())
+			{
+			case HANDCARD:
+				getMyself().takeCard(getData().getCardMessage());
+				break;
+			case PLAYEDCARD:
+				//TODO: Lege die erhaltene Karte auf Table ab.
+				break;
+			}
+			setGameState(GameState.WAIT);	//Daten wurden verarbeitet.
+			break;
+			
+		case INT:
+			switch(getData().getState())
+			{
+			case POINTS:
+				//TODO: füge die erhaltene Zahl den eigenen Punkten hinzu!
+				break;
+			case ENEMYPOINTS:
+				//TODO: füge die erhaltene Zahl den gegnerischen Punkten hinzu!
+				break;
+			}
+			setGameState(GameState.WAIT);
+			break;
+			
+		case STRING:
+			
+			break;
+			
+		case SETCLIENTSTATE:					//setzen des übergebenen States, sodass dieser Fall in der StateMaschine abgearbeitet werden kann.
+			setGameState(getData().getState());
+			break;
+		}
+	}
 	
 	//-------------------------------------------------------------------------------------------
 	//ConnectionManagement

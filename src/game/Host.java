@@ -14,13 +14,54 @@ public class Host extends Game
 		organizeConnections(); //Verbindungen aufbauen, endpointids und namen entgegennehmen, erst fortfahren, wenn alles erledigt ist.
 		while(anzPlayer < 4) {}
 		
-		distributeInformation(); //Die Namen aller Mitspieler + weitere relevante informationen, wie ihre jeweilige Position am Tisch verteilen.
+		distributePlayerNames(); //Die Namen aller Mitspieler + weitere relevante informationen, wie ihre jeweilige Position am Tisch verteilen.
 		
 		do
-			startTournament();
+			Tournament tournament = new Tournament();
 		while(playAgain());
 		
 		disconnectConnections();
+	}
+	
+	
+    //-----------------------------------------------------------------------------------------------------------------------        
+    //Sending Data
+            
+
+	public void sendInfoTo(Player p, Info info)
+	{
+		sendInfoTo(p.getEndPointId(), info);
+	}
+	
+	public void sendInfoTo(String endPointId, Info info)
+	{
+		Nearby.Connections.sendPayload(getGoogleApiClient(), endPointId, info.asPayload());
+	}
+	
+	public void sendToAllPlayers(Info info)			//Schickt die gleiche Payload an alle Spieler
+	{
+		for(int i = 1; i < getAnzPlayer(); i++)		//player[0] ist Host, nur clients wichtig!
+        {
+            sendInfoTo(getPlayer(i), info);
+        }
+	}
+	
+	public void distributePlayerNames()
+	{
+		//Inform Clients about incoming playerNames!
+		sendToAllPlayers(new Info(GameState.ADDPLAYERNAMES, DataType.SETCLIENTSTATE, null));
+		
+		//Send the separate PlayerNames:
+		for(int j = 0; j < getAnzPlayer(); j++) //mit der doppelten Schleife werden allen Spielern nach und nach die anderen Spieler übermittelt,
+		{										//sich selbst immer zuerst, dann der Reihe nach um den Tisch herum.
+			for(int i = 0; i < getAnzPlayer(); i++)
+			{
+				String id = getPlayer(i).getEndPointId(); //receiver
+				if(id != null)
+					sendInfoTo(id, new Info(GameState.PLAYERNAME, getPlayer((i+j)%4).getName()));	//playerName
+			}
+		}
+		
 	}
 	//---------------------------------------------------------------------------------------------------
 	//ConnectionManagement
@@ -90,28 +131,6 @@ public class Host extends Game
 
 
             
-    //-----------------------------------------------------------------------------------------------------------------------        
-    //Sending Data
-            
-	public void sendPayloadTo(Player p, Payload payload)	//GrundFunktion um Payload an einen mitSpieler zu schicken
-	{
-		Nearby.Connections.sendPayload(getGoogleApiClient(), p.getEndPointId(), payload);
-	}
-	
-	public void sendToAllParticipants(Payload payload)			//Schickt die gleiche Payload an alle Spieler
-	{
-		for(int i = 0; i < anzPlayer; i++)
-        {
-            sendPayloadTo(getPlayer(i), payload);
-        }
-	}
-	
-	public void propagateCard(Card card)
-	{
-        Info info = new Info(GameState.waitForHandCard, card);
-        
-        Payload payload = info.asPayload();
-        sendToAllParticipants(payload);       
-    }
+
 
 }

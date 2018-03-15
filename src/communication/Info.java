@@ -38,8 +38,6 @@ public class Info
 	{
 		message = payload.asBytes();
 		this.decodeMessage();
-		
-		//TODO: testing
 	}
 	
 	/**
@@ -51,7 +49,7 @@ public class Info
 	 * 
 	 */
 	
-	public Info(GameState nextState, byte[] byteArray, DataType dataType) //Rudimentärer Konstruktor, evt unnötig, also löschen!
+	public Info(GameState nextState, DataType dataType, byte[] byteArray) //Rudimentärer Konstruktor, evt unnötig, also löschen!
 	{
 		this.byteArray = byteArray;
 		this.nextState = nextState;
@@ -96,7 +94,7 @@ public class Info
 	 * 
 	 */
 	
-	public Info(GameState nextState, Card card) //TODO: testing!
+	public Info(GameState nextState, Card card)
 	{
 		this.nextState = nextState;
 		this.byteArray = card.toByteArr();
@@ -133,7 +131,7 @@ public class Info
 	 * 
 	 */
 	
-	private void decodeMessage()		//TODO: Testing!
+	private void decodeMessage()
 	{
 		if(message != null)
 		{
@@ -309,7 +307,7 @@ public class Info
 		return byteArray;
 	}
 	
-	private DataType getType() 
+	public DataType getType() 
 	{
 		return this.dataType;
 	}

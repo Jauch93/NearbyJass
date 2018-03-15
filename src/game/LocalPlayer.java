@@ -17,6 +17,10 @@ public class LocalPlayer extends Player
 		handCards = new Card[anzCards + 1];
 		handCards[anzCards] = card;
 		anzCards++;
+		if(anzCards == 9)
+		{
+			sortCards(); //Sobald alle Karten auf der Hand sind, sollen sie sortiert werden.
+		}
 	}
 	
 	public void setAllCardsPlayable()

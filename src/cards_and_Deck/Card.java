@@ -15,7 +15,6 @@ public class Card
 	
 	public Card(byte[] bytes)		//Einfacherer Konstruktor, um die Karte aus der Payload zu erzeugen.
 	{
-		//TODO: implement!
 		color = CardColor.values()[bytes[0]];
 		name = CardName.values()[bytes[1]];
 		byte[] tmp = Arrays.copyOfRange(bytes, 2, 5);

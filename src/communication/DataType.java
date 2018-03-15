@@ -6,5 +6,8 @@ public enum DataType
 	INT,
 	CARD,
 	
+	SETCLIENTSTATE,
+	SETHOSTSTATE,
+	
 	UNDEF
 }
